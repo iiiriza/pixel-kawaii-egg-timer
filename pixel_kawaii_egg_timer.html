@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>💖 Pixel Kawaii Egg Timer 💖</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  body {
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(135deg, #ffe6f0, #fffbe6);
+    text-align: center;
+    padding: 30px;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 26px;
+    color: #ff6f91;
+    margin-bottom: 20px;
+  }
+
+  button {
+    background: #ffde59;
+    border: 3px solid #000;
+    padding: 14px 18px;
+    margin: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+  }
+
+  #timer {
+    font-size: 32px;
+    margin: 25px 0;
+    color: #ff6f91;
+  }
+
+  img {
+    width: 96px;
+    margin-top: 15px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 16px;
+    animation: float 4s linear infinite;
+    image-rendering: pixelated;
+  }
+
+  @keyframes float {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-200px); opacity: 0; }
+  }
+</style>
+</head>
+
+<body>
+
+<h1>💖 PIXEL EGG TIMER 💖</h1>
+<p style="font-size:10px;">Pick your egg 🥚</p>
+
+<button onclick="startTimer(300,'boiled')">BOILED</button>
+<button onclick="startTimer(180,'fried')">FRIED</button>
+<button onclick="startTimer(240,'bull')">BULL EYE</button>
+
+<div id="timer">00:00</div>
+<img id="egg" style="display:none;">
+
+<script>
+let countdown;
+let timeLeft;
+let audioCtx;
+
+function tickSound() {
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.frequency.value = 900;
+  g.gain.value = 0.04;
+  o.connect(g);
+  g.connect(audioCtx.destination);
+  o.start();
+  o.stop(audioCtx.currentTime + 0.05);
+}
+
+function alarmSound() {
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.frequency.value = 600;
+  g.gain.value = 0.1;
+  o.connect(g);
+  g.connect(audioCtx.destination);
+  o.start();
+  o.stop(audioCtx.currentTime + 1);
+}
+
+function startTimer(seconds, type) {
+  clearInterval(countdown);
+  timeLeft = seconds;
+
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  const egg = document.getElementById("egg");
+  egg.style.display = "block";
+
+  // PIXEL ART IMAGES
+  if (type === 'boiled') egg.src = "https://i.imgur.com/9XnZJ0b.png";   // pixel boiled egg
+  if (type === 'fried') egg.src = "https://i.imgur.com/2RXYF6K.png";   // pixel fried egg
+  if (type === 'bull')  egg.src = "https://i.imgur.com/mP0kZyG.png";   // pixel bull's eye
+
+  updateDisplay();
+
+  countdown = setInterval(() => {
+    timeLeft--;
+    tickSound();
+    updateDisplay();
+
+    if (timeLeft <= 0) {
+      clearInterval(countdown);
+      alarmSound();
+      document.getElementById("timer").textContent = "DONE!";
+      alert("💖 EGG READY! 💖");
+    }
+  }, 1000);
+}
+
+function updateDisplay() {
+  let m = Math.floor(timeLeft / 60);
+  let s = timeLeft % 60;
+  document.getElementById("timer").textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// pixel hearts
+setInterval(() => {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = "💗";
+  h.style.left = Math.random() * window.innerWidth + "px";
+  h.style.bottom = "0px";
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 4000);
+}, 600);
+</script>
+
+</body>
+</html>
